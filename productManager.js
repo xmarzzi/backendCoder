@@ -1,15 +1,32 @@
-class ProductManager {
-    constructor() {
-        this.products = [];
+import fs from "fs";
+if (!fs.existsSync("products.json")) {
+    fs.writeFileSync("products.json", "[]");
     }
-   
+  class ProductManager {
+    
+    constructor(path) {
+        this.products = [];
+        this.path = path
+        this.idAutoInc = -1
+    }
+    loadDB(){
+        this.products = JSON.parse(fs.readFileSync(this.path))
+        if(this.products.length>0){
+        this.idAutoInc=this.products[this.products.length-1].id
+        }
+    }
+    updateDB(){
+        fs.writeFileSync(this.path, JSON.stringify(this.products, null , 2)) 
+    }
     
     addProduct(title,description,price,thumbnail,code,stock){
+        this.loadDB()
+        this.idAutoInc++
         const repeatedProduct = this.products.some(item => item.code === code)
         if(repeatedProduct === false && title && description && price && thumbnail && code && stock){
             this.products.push({
-                id:Math.floor(Math.random()*10) + 1,
-                title:title,
+                id:this.idAutoInc,
+                title: title,
                 description:description,
                 price:price,
                 thumbnail:thumbnail,
@@ -17,32 +34,85 @@ class ProductManager {
                 stock:stock
 
             })
+            this.updateDB()
+            
+
         }else{
-            console.log("Error, the product already exists or you did not complete all the fields")
+            console.log("Error, duplicated product, or invalid parameters")
         }
     }
 
     getProducts(){
-        return this.products
+        this.loadDB()
+        if(this.products){
+            return this.products
+        }else{
+            console.log("Product list is empty.");
+        }
+       
     }
 
     getProductById(id){
-         const productExists = this.products.find(product => product.id === id)
-         if(productExists){
-            return productExists
-         }else{
-            console.log("Not Found")
-         }
+        this.loadDB()
+        const productIfExists = this.products.find(product => product.id === id)
+        if(productIfExists){
+            return productIfExists
+        }else{
+            console.log(`Failed to get Product, Product ${id} was not found`)
+        }
     }
-}
 
-  const fruits = new ProductManager();
-    fruits.addProduct( "Sandia","verde, tamaño mediano, 2.5 kg", 250, "http//.ar", 1, 5);
-    fruits.addProduct( "Manzana","roja", 25, "Sin imagen", 3, 2);
-    fruits.addProduct( "Naranja","Dulce", 20, "Sin imagen", 4, 6);
-    fruits.getProductById(1)
-console.log(fruits.getProducts());
+    updateProduct(id,parameters){
+        this.loadDB()
+        
+        const index = this.products.findIndex(product => product.id === id)
+        if(index !== -1){
+            const parameterTitle=parameters.title ?? this.products[index].title;
+            const parameterDescription=parameters.description ?? this.products[index].description;
+            const parameterPrice=parameters.price ?? this.products[index].price;
+            const parameterThumbnail=parameters.thumbnail ?? this.products[index].thumbnail;
+            const parameterCode=parameters.code ?? this.products[index].code;
+            const parameterStock=parameters.stock ?? this.products[index].stock;
+    
+            this.products[index] = {
+                id:id,
+                title:parameterTitle,
+                description:parameterDescription,
+                price:parameterPrice,
+                thumbnail:parameterThumbnail,
+                code:parameterCode,
+                stock:parameterStock
+            }
+            this.updateDB()
+        }else{
+            console.log(`Product ${id} was not found`) 
+        }
+    }
 
+    deleteProduct(id){
+        this.loadDB()
+        const index = this.products.findIndex(product => product.id === id)
+        if(index !== -1){
+            this.products.splice(index,index+1)
+            this.updateDB()
+            console.log("product deleted succesfully")
+          }else{
+            console.log(`Failed to Delete Product, Product ${id} was not found`)
+          }
+        }
+    }
 
+const tenis = new ProductManager("products.json");
 
+tenis.addProduct("Nike Air Force one","blanca",2300,"Nike.jpg","31AirF",15)
+tenis.addProduct("Vans old","Un clásico",1800,"VANS.jpg","32Va",23)
+tenis.addProduct("Vans x NatGeo","Colaboración con NatGeo",2000,"vansNatGeo.jpg","33VaNG",10)
+console.log(tenis.getProducts())
 
+tenis.updateProduct(1,{price:1900,stock:25});
+
+console.log(tenis.getProducts())
+
+tenis.deleteProduct(0);
+
+console.log(tenis.getProducts())

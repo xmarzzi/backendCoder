@@ -1,0 +1,23 @@
+{
+  "name": "trabajos",
+  "version": "1.0.0",
+  "description": "",
+  "main": "asd.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xmarzzi/backendCoder.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xmarzzi/backendCoder/issues"
+  },
+  "homepage": "https://github.com/xmarzzi/backendCoder#readme",
+  "type": "module",
+  "dependencies": {
+    "fs": "^0.0.1-security"
+  }
+}
