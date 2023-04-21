@@ -107,6 +107,7 @@ const tenis = new ProductManager("products.json");
 tenis.addProduct("Nike Air Force one","blanca",2300,"Nike.jpg","31AirF",15)
 tenis.addProduct("Vans old","Un clásico",1800,"VANS.jpg","32Va",23)
 tenis.addProduct("Vans x NatGeo","Colaboración con NatGeo",2000,"vansNatGeo.jpg","33VaNG",10)
+tenis.addProduct("Vans x Simpsons","Colaboración con Simpsons",2500,"vanSimp.jpg","34VaS",12)
 console.log(tenis.getProducts())
 
 tenis.updateProduct(1,{price:1900,stock:25});
